@@ -1,4 +1,5 @@
-
+import React from 'react';
+import lookup from './lookup';
 import { useState } from 'react';
 
 export default function VinLookup() {
@@ -30,11 +31,13 @@ export default function VinLookup() {
       setLoading(false);
     }
   };
-
+  console.log({ vin });
+  console.log({ loading });
+  console.log({ results });
+  console.log({ error });
   return (
     <div className="max-w-xl mx-auto p-4 bg-white rounded-2xl shadow">
       <h1 className="text-xl font-semibold mb-4">VIN Part Lookup</h1>
-
       <input
         type="text"
         value={vin}
