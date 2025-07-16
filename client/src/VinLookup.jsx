@@ -54,7 +54,7 @@ export default function VinLookup({ VIN = '', res }) {
 
       {error && <p>{error}</p>}
 
-      {results && (
+      {results && results.vehicle(
         <div >
           <h2>Vehicle:</h2>
           <p>{results.vehicle.year} {results.vehicle.make} {results.vehicle.model} ({results.vehicle.body})</p>
