@@ -47,6 +47,9 @@ app.get('/api/parts', async (req, res) => {
       database: process.env.DB_DATABASE,
       password: process.env.DB_PASSWORD,
       port: process.env.DB_PORT,
+      ssl: {
+        rejectUnauthorized: false, // only use this for dev/self-signed
+      },
     });
 
     await db.connect();
