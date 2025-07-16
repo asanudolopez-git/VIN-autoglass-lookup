@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Part from './Part';
-const API = import.meta.env.VITE_API_URL;
 
 export default function VinLookup({ VIN = '', res }) {
   const [vin, setVin] = useState(VIN);
@@ -19,7 +18,7 @@ export default function VinLookup({ VIN = '', res }) {
     setResults(null);
 
     try {
-      const res = await fetch(`${API}/api/parts?vin=${vin}`);
+      const res = await fetch(`/api/parts?vin=${vin}`);
       const data = await res.json();
       if (data.parts?.length) {
         setResults(data);
