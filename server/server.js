@@ -6,7 +6,10 @@ import axios from 'axios';
 import { Client } from 'pg';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
+import Tesseract from 'tesseract.js';
 
+const upload = multer({ dest: 'uploads/' });
 // Setup env and paths
 dotenv.config();
 const app = express();
@@ -16,6 +19,25 @@ const distDir = resolve(__dirname, '../client/dist');
 const indexPath = resolve(__dirname, '../client/dist/index.html');
 app.use(express.static(distDir));
 app.use(cors());
+
+// POST /api/parts-from-image
+app.post('/api/parts-from-image', upload.single('vinImage'), async (req, res) => {
+  const filePath = req.file.path;
+
+  try {
+    const { data: { text } } = await Tesseract.recognize(filePath, 'eng');
+    fs.unlinkSync(filePath); // clean up uploaded file
+    console.log('OCR Result:', text);
+    const vin = text.match(/[A-HJ-NPR-Z0-9]{17}/)?.[0];
+    if (!vin) return res.status(400).json({ error: 'VIN not found in image' });
+
+    res.redirect(`/api/parts?vin=${vin}`);
+  } catch (err) {
+    console.error('OCR error:', err);
+    res.status(500).json({ error: 'Failed to extract VIN from image' });
+  }
+});
+
 
 // VIN → parts lookup API
 app.get('/api/parts', async (req, res) => {

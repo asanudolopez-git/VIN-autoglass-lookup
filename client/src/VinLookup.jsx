@@ -7,6 +7,33 @@ export default function VinLookup({ VIN = '', res }) {
   const [results, setResults] = useState(res);
   const [error, setError] = useState(null);
 
+  const handleImageChange = async e => {
+    e.preventDefault();
+    setVin('');
+    setError(null);
+    setLoading(true);
+    setResults(null);
+
+    const file = e.target.files[0];
+
+    const formData = new FormData();
+    formData.append('vinImage', file);
+
+    const res = await fetch('/api/parts-from-image', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    setLoading(false);
+    if (data.parts) {
+      setResults(data);
+      setVin(data.vin);
+    } else {
+      setError(data.error || 'No parts found.');
+    }
+  }
+
   const handleLookup = async () => {
     console.log('🔍 Looking up VIN:', vin);
     if (vin.length !== 17) {
@@ -37,19 +64,23 @@ export default function VinLookup({ VIN = '', res }) {
   console.log({ error });
   return (
     <div className="VinLookup">
-      <h1>VIN Part Lookup</h1>
-      <input
-        type="text"
-        value={vin}
-        onChange={(e) => setVin(e.target.value)}
-        placeholder="Enter VIN"
-      />
-      <button
-        onClick={handleLookup}
-        disabled={loading}
-      >
-        {loading ? 'Looking up...' : 'Lookup'}
-      </button>
+      <h1>Lookup Parts by VIN</h1>
+      <input type="file" name="vinImage" accept="image/*" onChange={handleImageChange} />
+      <div style={{ marginTop: '10px', width: '300px' }}>
+        <input
+          type="text"
+          value={vin}
+          onChange={(e) => setVin(e.target.value)}
+          placeholder="Enter VIN"
+        />
+        <button
+          onClick={handleLookup}
+          disabled={loading}
+        >
+          {loading ? 'Looking up...' : 'Lookup'}
+        </button>
+
+      </div>
 
       {error && <p>{error}</p>}
 
