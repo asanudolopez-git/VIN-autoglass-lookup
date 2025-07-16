@@ -73,13 +73,13 @@ app.get('/api/parts', async (req, res) => {
 });
 
 // React fallback: serve index.html for any other route
-// app.get('*', (req, res) => {
-//   if (fs.existsSync(indexPath)) {
-//     res.sendFile(indexPath);
-//   } else {
-//     res.status(404).send('Frontend not built yet.');
-//   }
-// });
+app.get(/(.*)/, (req, res) => {
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('Frontend not built yet.');
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
