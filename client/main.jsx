@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import VinLookup from './VinLookup.jsx';
+import VinLookup from './src/VinLookup.jsx';
 import '/index.css';
 
 const res = {
