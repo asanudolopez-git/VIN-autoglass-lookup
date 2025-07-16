@@ -3,8 +3,8 @@ import { useState } from 'react';
 import Part from './Part';
 const API = import.meta.env.VITE_API_URL;
 
-export default function VinLookup({ res }) {
-  const [vin, setVin] = useState('');
+export default function VinLookup({ VIN = '', res }) {
+  const [vin, setVin] = useState(VIN);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(res);
   const [error, setError] = useState(null);

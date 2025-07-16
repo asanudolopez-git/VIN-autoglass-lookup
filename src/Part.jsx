@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Part = ({ part: { Body, PartNumber, Description, WebsitePrice1_CanAm, } }) => (
-  <div className="Part">
+  <div className="Part" style={{ 'border-top': '1px solid' }}>
     <h3>{PartNumber}</h3>
     <p>{Description}</p>
     <p>Body: {Body}</p>
