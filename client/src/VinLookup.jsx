@@ -58,13 +58,14 @@ export default function VinLookup({ VIN = '', res }) {
       setLoading(false);
     }
   };
+
   console.log({ vin });
   console.log({ loading });
   console.log({ results });
   console.log({ error });
   return (
     <div className="VinLookup">
-      <h1>Lookup Parts by VIN</h1>
+      <h1>Look Up Parts by VIN</h1>
       <input type="file" name="vinImage" accept="image/*" onChange={handleImageChange} />
       <div style={{ marginTop: '10px', width: '300px' }}>
         <input
