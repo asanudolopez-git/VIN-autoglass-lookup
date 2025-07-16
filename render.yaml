@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: vin-lookup
+    env: node
+    buildCommand: |
+      cd client && npm install && npm run build
+      cd ../server && npm install
+    startCommand: node server.js
+    buildFilter:
+      paths:
+        - client/**
+        - server/**
+    envVars:
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_TABLE
+        sync: false
