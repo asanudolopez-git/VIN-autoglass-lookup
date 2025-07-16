@@ -1,13 +1,15 @@
 import express from 'express';
-import fs from 'fs';
+import * as fs from 'fs';              // for existsSync
+import { unlink } from 'fs/promises';  // for async unlink
 import cors from 'cors';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { Client } from 'pg';
-import { dirname, resolve } from 'path';
+import path, { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import Tesseract from 'tesseract.js';
+import sharp from 'sharp';
 
 const upload = multer({ dest: 'uploads/' });
 // Setup env and paths
@@ -23,18 +25,42 @@ app.use(cors());
 // POST /api/parts-from-image
 app.post('/api/parts-from-image', upload.single('vinImage'), async (req, res) => {
   const filePath = req.file.path;
+  const processedPath = path.join('uploads', `processed-${req.file.filename}.png`);
+  console.log('Processing file:', filePath);
+  console.log(req.file);
+  console.log('Saving processed file to:', processedPath);
+
+  if (!filePath || !req.file.filename) {
+    return res.status(400).json({ error: 'Invalid file upload' });
+  }
+
+  await sharp(filePath)
+    .grayscale()
+    .normalize()
+    .threshold(180)
+    .toFile(processedPath);
 
   try {
-    const { data: { text } } = await Tesseract.recognize(filePath, 'eng');
-    fs.unlinkSync(filePath); // clean up uploaded file
-    console.log('OCR Result:', text);
-    const vin = text.match(/[A-HJ-NPR-Z0-9]{17}/)?.[0];
-    if (!vin) return res.status(400).json({ error: 'VIN not found in image' });
+    const { data: { text } } = await Tesseract.recognize(
+      processedPath,
+      'eng',
+      { logger: m => console.log(m) }
+    );
 
-    res.redirect(`/api/parts?vin=${vin}`);
+    const rawText = text.replace(/\s+/g, '').toUpperCase();
+    const vinMatch = rawText.match(/[A-HJ-NPR-Z0-9]{17}/); // VIN pattern
+
+    if (vinMatch) {
+      res.redirect(`/api/parts?vin=${vinMatch[0]}`);
+    } else {
+      res.status(400).json({ error: 'VIN not found', ocrText: rawText });
+    };
   } catch (err) {
     console.error('OCR error:', err);
     res.status(500).json({ error: 'Failed to extract VIN from image' });
+  } finally {
+    await unlink(filePath).catch(() => { });
+    await unlink(processedPath).catch(() => { });
   }
 });
 
