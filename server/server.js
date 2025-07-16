@@ -57,9 +57,9 @@ app.get('/api/parts', async (req, res) => {
     // Query for matching parts
     const query = `
       SELECT * FROM public."${process.env.DB_TABLE}"
-      WHERE "Make" ILIKE $1 AND "Model" ILIKE $2 AND "Year" = $3 AND "Body" ILIKE '%' || $4 || '%'
+      WHERE "Make" ILIKE $1 AND "Model" ILIKE $2 AND "Year" = $3
     `;
-    const values = [make, model, year, body];
+    const values = [make, model, year];
     const resultSet = await db.query(query, values);
     await db.end();
 
