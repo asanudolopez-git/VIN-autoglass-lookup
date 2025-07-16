@@ -30,16 +30,16 @@ app.get('/api/parts', async (req, res) => {
     // Decode VIN
     const response = await axios.get(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/${vin}?format=json`);
     const result = response.data.Results[0];
+    const {
+      Make: make,
+      Model: model,
+      ModelYear: year,
+      BodyClass: body,
+    } = result;
 
-    const make = result.Make;
-    const model = result.Model;
-    const year = result.ModelYear;
-    const body = result.BodyClass;
-
-    if (!make || !model || !year) {
+    if (!make || !model || !year || !body) {
       return res.status(404).json({ error: 'VIN decode failed' });
     }
-
     // Connect to DB
     const db = new Client({
       user: process.env.DB_USER,
@@ -54,10 +54,10 @@ app.get('/api/parts', async (req, res) => {
     // Query for matching parts
     const query = `
       SELECT * FROM public."${process.env.DB_TABLE}"
-      WHERE "Make" ILIKE $1 AND "Model" ILIKE $2 AND "Year" = $3
+      WHERE "Make" ILIKE $1 AND "Model" ILIKE $2 AND "Year" = $3 AND "Body" ILIKE '%' || $4 || '%'
     `;
-    const values = [make, model, year];
-    const resultSet = await db.query(query);
+    const values = [make, model, year, body];
+    const resultSet = await db.query(query, values);
     await db.end();
 
     res.json({
@@ -73,13 +73,13 @@ app.get('/api/parts', async (req, res) => {
 });
 
 // React fallback: serve index.html for any other route
-app.get('*', (req, res) => {
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).send('Frontend not built yet.');
-  }
-});
+// app.get('*', (req, res) => {
+//   if (fs.existsSync(indexPath)) {
+//     res.sendFile(indexPath);
+//   } else {
+//     res.status(404).send('Frontend not built yet.');
+//   }
+// });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
