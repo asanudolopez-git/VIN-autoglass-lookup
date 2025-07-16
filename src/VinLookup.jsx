@@ -1,6 +1,6 @@
 import React from 'react';
-import lookup from './lookup';
 import { useState } from 'react';
+const API = import.meta.env.VITE_API_URL;
 
 export default function VinLookup() {
   const [vin, setVin] = useState('');
@@ -9,6 +9,7 @@ export default function VinLookup() {
   const [error, setError] = useState(null);
 
   const handleLookup = async () => {
+    console.log('🔍 Looking up VIN:', vin);
     if (vin.length !== 17) {
       setError('VIN must be 17 characters');
       return;
@@ -18,7 +19,7 @@ export default function VinLookup() {
     setResults(null);
 
     try {
-      const res = await fetch(`/api/parts?vin=${vin}`);
+      const res = await fetch(`${API}/api/parts?vin=${vin}`);
       const data = await res.json();
       if (data.parts?.length) {
         setResults(data);
