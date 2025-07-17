@@ -34,7 +34,8 @@ export const extractVINWithGoogleVision = async (imagePath) => {
     const { textAnnotations, fullTextAnnotation } = responses[0];
     console.log({ textAnnotations, fullTextAnnotation });
     if (!textAnnotations || textAnnotations.length === 0) {
-      return res.status(500).json({ error: 'Failed to extract VIN from image' });
+      // return res.status(500).json({ error: 'Failed to extract VIN from image' });
+      return { vin: null, rawText: null };
     }
     const rawText = fullTextAnnotation.text.replace(/\s+/g, '').toUpperCase();
     const vinMatch = rawText.match(/[A-HJ-NPR-Z0-9]{17}/);
@@ -46,7 +47,8 @@ export const extractVINWithGoogleVision = async (imagePath) => {
     };
   } catch (err) {
     console.error('Google Vision OCR error:', JSON.stringify(err.response?.data || err.message));
-    return res.status(500).json({ error: 'Failed to contact OCR' });
+    return { vin: null, rawText: null };
+    // return res.status(500).json({ error: 'Failed to contact OCR' });
   }
 };
 
