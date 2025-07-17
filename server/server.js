@@ -37,30 +37,40 @@ app.post('/api/parts-from-image', upload.single('vinImage'), async (req, res) =>
   await sharp(filePath)
     .grayscale()
     .normalize()
-    .threshold(180)
+    .blur(0.3)        // Softer blur than 0.3 — just enough to fight noise
+    .sharpen()
+    .toFormat('png')
     .toFile(processedPath);
 
   try {
     const { data: { text } } = await Tesseract.recognize(
       processedPath,
       'eng',
-      { logger: m => console.log(m) }
+      {
+        logger: m => console.log(m),
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+        tessedit_pageseg_mode: 7
+      }
     );
 
     const rawText = text.replace(/\s+/g, '').toUpperCase();
     const vinMatch = rawText.match(/[A-HJ-NPR-Z0-9]{17}/); // VIN pattern
+    const candidates = text.match(/[A-HJ-NPR-Z0-9]{14,20}/g);
+    console.log('VIN candidates:', candidates);
+
+    console.log('OCR Result:', rawText);
 
     if (vinMatch) {
       res.redirect(`/api/parts?vin=${vinMatch[0]}`);
     } else {
-      res.status(400).json({ error: 'VIN not found', ocrText: rawText });
+      res.status(400).json({ error: 'VIN not found', vin: rawText });
     };
   } catch (err) {
     console.error('OCR error:', err);
     res.status(500).json({ error: 'Failed to extract VIN from image' });
   } finally {
     await unlink(filePath).catch(() => { });
-    await unlink(processedPath).catch(() => { });
+    // await unlink(processedPath).catch(() => { });
   }
 });
 

@@ -28,8 +28,9 @@ export default function VinLookup({ VIN = '', res }) {
     setLoading(false);
     if (data.parts) {
       setResults(data);
-      setVin(data.vin);
     } else {
+      console.error('Error:', data);
+      setVin(data.vin);
       setError(data.error || 'No parts found.');
     }
   }
@@ -51,6 +52,8 @@ export default function VinLookup({ VIN = '', res }) {
         setResults(data);
       } else {
         setError('No parts found.');
+        console.log('ASANUDO: ', data.vin);
+        setVin(data.vin || vin);
       }
     } catch (err) {
       setError('Error contacting server.');
