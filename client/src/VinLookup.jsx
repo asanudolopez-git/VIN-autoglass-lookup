@@ -28,9 +28,9 @@ export default function VinLookup({ VIN = '', res }) {
     setLoading(false);
     if (data.parts) {
       setResults(data);
+      setVin(data.vin);
     } else {
       console.error('Error:', data);
-      setVin(data.vin);
       setError(data.error || 'No parts found.');
     }
   }
