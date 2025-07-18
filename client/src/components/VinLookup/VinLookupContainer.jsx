@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getPartsFromImage, getPartsFromVin } from '../api';
+import { getPartsFromImage, getPartsFromVin } from '../../api';
 import { VinLookup } from '.';
 
 const VinLookupContainer = ({ initialState = {} }) => {

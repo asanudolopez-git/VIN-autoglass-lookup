@@ -10,7 +10,7 @@ export const VinLookup = ({
   onImageUpload,
   onLookup,
 }) => (
-  <div className="VinLookup">
+  <div className="VinLookup flex">
     <h1>Look Up Parts by VIN</h1>
     <input type="file" name="vinImage" accept="image/*" onChange={onImageUpload} />
     <div style={{ marginTop: '10px', width: '300px' }}>
