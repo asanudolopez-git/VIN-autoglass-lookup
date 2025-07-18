@@ -6,7 +6,7 @@
     "dev": "concurrently --kill-others \"npm run client\" \"npm run server\"",
     "postinstall": "cd client && npm install && npm run build",
     "client": "cd client && npm run dev",
-    "server": "cd server && npm install && node server.js"
+    "start": "cd server && npm install && node server.js"
   },
   "devDependencies": {
     "concurrently": "^9.2.0"
