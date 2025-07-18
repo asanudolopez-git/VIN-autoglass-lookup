@@ -4,6 +4,7 @@
   "description": "Simple VIN lookup UI",
   "type": "module",
   "scripts": {
+    "dev": "node server.js --watch",
     "start": "node server.js"
   },
   "dependencies": {
