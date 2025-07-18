@@ -3,7 +3,7 @@ node_modules/
 
 # Env and secrets
 .env
-.env.local
+.env.development
 
 # Script output
 tmp/
