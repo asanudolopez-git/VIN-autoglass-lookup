@@ -29,10 +29,18 @@ const Part = ({
         {Body ? ` ${Body}` : ""}
       </span>
     </a>
-    <p>Description: {Description}</p>
-    <p>Price: {WebsitePrice1_CanAm}</p>
-    <p>Availability: {Availability}</p>
-    <p>Ships: {Ships}</p>
+    <p>
+      <strong>Description:</strong> {Description}
+    </p>
+    <p>
+      <strong>Price:</strong> {WebsitePrice1_CanAm}
+    </p>
+    <p>
+      <strong>Availability:</strong> {Availability}
+    </p>
+    <p>
+      <strong>Ships:</strong> {Ships}
+    </p>
   </div>
 );
 
