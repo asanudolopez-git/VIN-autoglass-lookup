@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently --kill-others \"npm run client\" \"npm run server\"",
+    "dev": "concurrently --kill-others \"npm run client\" \"npm run start\"",
     "postinstall": "cd client && npm install && npm run build",
     "client": "cd client && npm run dev",
     "start": "cd server && npm install && node server.js"

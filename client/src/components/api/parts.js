@@ -1,8 +1,7 @@
 export const getPartsFromImage = async image => {
-
   const formData = new FormData();
   formData.append('vinImage', image);
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/parts-from-image`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/parts/image`, {
     method: 'POST',
     body: formData,
   });

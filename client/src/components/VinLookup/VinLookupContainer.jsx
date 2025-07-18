@@ -7,7 +7,6 @@ const VinLookupContainer = ({ initialState = {} }) => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(initialState.results || null);
   const [error, setError] = useState(null);
-  console.log({ VITE_API_URL: import.meta.env.VITE_API_URL });
 
   const handleData = data => {
     if (data.parts) {
@@ -49,10 +48,8 @@ const VinLookupContainer = ({ initialState = {} }) => {
     try {
       setLoading(true);
       const data = await getPartsFromVin(vin);
-      console.log('Lookup data:', data);
       handleData(data);
     } catch (err) {
-      console.log('Lookup err:', err);
       setError('Error contacting server.');
     } finally {
       setLoading(false);
