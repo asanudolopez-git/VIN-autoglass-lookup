@@ -119,6 +119,7 @@ app.get('/api/parts', async (req, res) => {
 
     const make = Make.split(/\W/)[0].toUpperCase();
     const model = Model.split(/\W/)[0].toUpperCase();
+
     console.log('Decoded VIN:', { Make, Model, ModelYear, BodyClass });
     // Connect to DB
     const db = new Client({
@@ -144,7 +145,7 @@ app.get('/api/parts', async (req, res) => {
     `;
     const values = [make, model, ModelYear];
     const queryString = query.replace('$1', make).replace('$2', model).replace('$3', ModelYear);
-    console.log('SQL Query:', queryString, values);
+    console.log('SQL Query:', queryString);
     const resultSet = await db.query(query, values);
     await db.end();
 
