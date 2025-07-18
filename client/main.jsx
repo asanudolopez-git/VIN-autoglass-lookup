@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import VinLookup from './src/VinLookup.jsx';
+import VinLookup from './src/components/VinLookup';
 import '/index.css';
 
 const res = {
@@ -210,6 +210,6 @@ const vin = '1HGCM82633A004352';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <VinLookup res={res} VIN={vin} />
+    <VinLookup initialState={{ vin, results: res }} />
   </React.StrictMode>
 );

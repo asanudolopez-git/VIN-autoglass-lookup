@@ -5,6 +5,6 @@
   "scripts": {
     "postinstall": "cd client && npm install && npm run build",
     "start": "cd server && npm install && node server.js",
-    "dev": "npm i && npm run start"
+    "dev": "cd client && npm run dev"
   }
 }
