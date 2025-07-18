@@ -38,7 +38,7 @@ export const extractVINWithGoogleVision = async (imagePath) => {
       return { vin: null, rawText: null };
     }
     const rawText = fullTextAnnotation.text.replace(/\s+/g, '').toUpperCase();
-    const vinMatch = rawText.match(/[A-HJ-NPR-Z0-9]{17}/);
+    const vinMatch = rawText.match(/[A-Z0-9]{17}/);
     console.log({ rawText, vinMatch })
 
     return {
@@ -111,15 +111,15 @@ app.get('/api/parts', async (req, res) => {
     const response = await axios.get(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/${vin}?format=json`);
     const result = response.data.Results[0];
     const {
-      Make: make,
-      Model: model,
-      ModelYear: year,
-      BodyClass: body,
+      Make,
+      Model,
+      ModelYear,
+      BodyClass,
     } = result;
 
-    if (!make || !model || !year || !body) {
-      return res.status(404).json({ error: 'VIN decode failed' });
-    }
+    const make = Make.split(/\W/)[0].toUpperCase();
+    const model = Model.split(/\W/)[0].toUpperCase();
+    console.log('Decoded VIN:', { Make, Model, ModelYear, BodyClass });
     // Connect to DB
     const db = new Client({
       user: process.env.DB_USER,
@@ -137,15 +137,20 @@ app.get('/api/parts', async (req, res) => {
     // Query for matching parts
     const query = `
       SELECT * FROM public."${process.env.DB_TABLE}"
-      WHERE "Make" ILIKE $1 AND "Model" ILIKE $2 AND "Year" = $3
+      WHERE UPPER("Make") LIKE $1 || '%' 
+      AND UPPER("Model") ILIKE $2 || '%'
+      AND "Year" = $3 
+      AND "WebsitePrice1_CanAm" != 'Call for Price'
     `;
-    const values = [make, model, year];
+    const values = [make, model, ModelYear];
+    const queryString = query.replace('$1', make).replace('$2', model).replace('$3', ModelYear);
+    console.log('SQL Query:', queryString, values);
     const resultSet = await db.query(query, values);
     await db.end();
 
     res.json({
       vin,
-      vehicle: { make, model, year, body },
+      vehicle: { make: Make, model: Model, year: ModelYear, body: BodyClass },
       parts: resultSet.rows,
     });
 

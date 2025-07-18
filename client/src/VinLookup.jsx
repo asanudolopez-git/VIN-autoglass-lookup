@@ -93,7 +93,6 @@ export default function VinLookup({ VIN = '', res }) {
           <h2>Vehicle:</h2>
           <p>{results.vehicle.year} {results.vehicle.make} {results.vehicle.model} ({results.vehicle.body})</p>
 
-          <h2>Parts:</h2>
           {results.parts.map((part, i) => (
             <Part key={i} part={part} />
           ))}
