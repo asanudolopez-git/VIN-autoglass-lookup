@@ -14,6 +14,9 @@ export const partsIndex = async (req, res) => {
 
   try {
     const result = await decodeVin(vin);
+    if (!result || !result.Make || !result.Model || !result.ModelYear) {
+      return res.status(404).json({ error: 'Vehicle not found' });
+    }
     const {
       Make,
       Model,
@@ -37,7 +40,7 @@ export const partsIndex = async (req, res) => {
     const query = `
       SELECT * FROM public."${process.env.DB_TABLE}"
       WHERE UPPER("Make") LIKE $1 || '%' 
-      AND UPPER("Model") ILIKE $2 || '%'
+      AND UPPER("Model") LIKE $2 || '%'
       AND "Year" = $3 
       AND "WebsitePrice1_CanAm" != 'Call for Price'
     `;
