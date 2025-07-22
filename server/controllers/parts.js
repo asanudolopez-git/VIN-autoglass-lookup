@@ -26,6 +26,7 @@ export const partsIndex = async (req, res) => {
 
     const make = Make.split(/\W/)[0].toUpperCase();
     const model = Model.split(/\W/)[0].toUpperCase();
+    const bodyRegex = new RegExp(`${BodyClass.toUpperCase().split(/\W/).filter(str => str).join('|')}`);
 
     const db = new Client({
       user: process.env.DB_USER,
@@ -39,21 +40,41 @@ export const partsIndex = async (req, res) => {
     await db.connect();
     const query = `
       SELECT * FROM public."${process.env.DB_TABLE}"
-      WHERE UPPER("Make") LIKE $1 || '%' 
-      AND UPPER("Model") LIKE $2 || '%'
-      AND "Year" = $3 
+      WHERE
+      "Year" = $1
+      AND UPPER("Make") LIKE '%' || $2 || '%' 
+      AND UPPER("Model") LIKE '%' || $3 || '%'
       AND "WebsitePrice1_CanAm" != 'Call for Price'
     `;
-    const values = [make, model, year];
-    const queryString = query.replace('$1', make).replace('$2', model).replace('$3', year);
+    const values = [year, make, model];
+    const queryString = query.replace('$1', year).replace('$2', make).replace('$3', model)
     console.log('SQL Query:', queryString);
     const resultSet = await db.query(query, values);
     await db.end();
 
+    const parts = Object.values(resultSet.rows.reduce((uniqueParts, part) => {
+      const { PartNumber, Year, Make, Model, Body, ModelHref, BodyHref } = part;
+      
+      if (Body && !Body.toUpperCase().match(bodyRegex)) {
+        return uniqueParts;
+      }
+      const vehicles = uniqueParts[PartNumber] && uniqueParts[PartNumber].vehicles || [];
+      const vehicle = {
+        name: `${Year} ${Make} ${Model}${Body ? ` ${Body}` : ''}`,
+        href: BodyHref || ModelHref,
+      };
+      uniqueParts[PartNumber] = {
+        ...part,
+        href: `https://www.canamautoglass.ca/parts/${PartNumber}`,
+        vehicles: [...vehicles, vehicle],
+      };
+      return uniqueParts;
+    }, {}));
+
     res.json({
       vin,
       vehicle: { make: Make, model: Model, year, body: BodyClass },
-      parts: resultSet.rows,
+      parts
     });
   } catch (err) {
     console.error('❌ Server error:', err);
