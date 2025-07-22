@@ -3,12 +3,10 @@ import React from "react";
 const Part = ({
   part: {
     PartNumber,
+    href,
+    vehicles = [],
     ModelHref,
     BodyHref,
-    Year,
-    Make,
-    Model,
-    Body,
     Description,
     WebsitePrice1_CanAm,
     Availability,
@@ -17,18 +15,10 @@ const Part = ({
 }) => (
   <div className="p-2">
     <h2>
-      <strong>{PartNumber}</strong>
+      <a className="w-min text-blue-600 underline" href={href} target="_blank">
+        <strong>{PartNumber}</strong>
+      </a>
     </h2>
-    <a
-      className="w-min text-blue-600 hover:underline"
-      href={BodyHref || ModelHref}
-      target="_blank"
-    >
-      <span>
-        {Year} {Make} {Model}
-        {Body ? ` ${Body}` : ""}
-      </span>
-    </a>
     <p>
       <strong>Description:</strong> {Description}
     </p>
@@ -41,6 +31,21 @@ const Part = ({
     <p>
       <strong>Ships:</strong> {Ships}
     </p>
+    <div className="my-2 flex flex-wrap gap-1">
+      <p>
+        <strong>Vehicles This Fits:</strong>
+      </p>
+      {vehicles.map((vehicle, i) => (
+        <span
+          key={i}
+          className="mx-3 cursor-pointer rounded-md bg-red-700 p-1 text-white transition-colors hover:bg-red-800"
+        >
+          <a className="" href={vehicle.href} target="_blank">
+            {vehicle.name}
+          </a>
+        </span>
+      ))}
+    </div>
   </div>
 );
 
