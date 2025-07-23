@@ -24,6 +24,11 @@ export const partsIndex = async (req, res) => {
       BodyClass,
     } = result;
 
+    console.log(result);
+    // $_POST['vehicleHasRainSensor'],
+    // $_POST['vehicleHasHeatedWiperPark'],
+    // $_POST['vehicleHasLaneDeparture'],
+    // $_POST['vehicleHasHUD']
     const make = Make.split(/\W/)[0].toUpperCase();
     const model = Model.split(/\W/)[0].toUpperCase();
     const bodyRegex = new RegExp(`${BodyClass.toUpperCase().split(/\W/).filter(str => str).join('|')}`);
@@ -64,9 +69,10 @@ export const partsIndex = async (req, res) => {
         href: BodyHref || ModelHref,
       };
       uniqueParts[PartNumber] = {
-        ...part,
+        price: Number(part.WebsitePrice1_CanAm.replace('$', '')),
         href: `https://www.canamautoglass.ca/parts/${PartNumber}`,
         vehicles: [...vehicles, vehicle],
+        ...part,
       };
       return uniqueParts;
     }, {}));
@@ -74,7 +80,7 @@ export const partsIndex = async (req, res) => {
     res.json({
       vin,
       vehicle: { make: Make, model: Model, year, body: BodyClass },
-      parts
+      parts: parts.sort((a, b) => a.price - b.price)
     });
   } catch (err) {
     console.error('❌ Server error:', err);
